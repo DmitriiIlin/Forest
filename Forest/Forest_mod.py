@@ -95,8 +95,8 @@ class SimpleTree:
                         q_ty_for_children=self.SearchLinks(allNodes[everynode].Children[everychildren])
                         if q_ty_for_children>1:
                             if (q_ty_for_parent-q_ty_for_children)%2==0:
-                                edges.append(allNodes[everynode].NodeValue)
-                                edges.append(allNodes[everynode].Children[everychildren].NodeValue)
+                                edges.append(allNodes[everynode])
+                                edges.append(allNodes[everynode].Children[everychildren])
                             else:
                                 pass
                         else:
