@@ -83,7 +83,7 @@ class SimpleGraph:
         self.Init_For_Hit() #Инициализация значений hit=False
         res=self.Limit(VFrom,Vto)
         if res==-1:
-            return None
+            return []
         stack_for_path=Stack()
         if VFrom==Vto:
             return stack_for_path.stack
