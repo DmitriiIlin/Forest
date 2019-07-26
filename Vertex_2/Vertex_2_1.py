@@ -81,10 +81,10 @@ class SimpleGraph:
     def DepthFirstSearch(self,VFrom,Vto):
         #Поиск пути в глубину, VFrom и VTo номера вершин
         self.Init_For_Hit() #Инициализация значений hit=False
+        stack_for_path=Stack()
         res=self.Limit(VFrom,Vto)
         if res==-1:
-            return []
-        stack_for_path=Stack()
+            return stack_for_path.stack
         if VFrom==Vto:
             return stack_for_path.stack
         new_Peek_Number=None
@@ -115,6 +115,8 @@ class SimpleGraph:
                     return stack_for_path.stack # возвращаем пустой стек, пути нет
             new_Peek_Number=None
             links=[]
+        else:
+            return stack_for_path.stack
             
                   
     def AddVertex(self, v):
@@ -170,27 +172,31 @@ class SimpleGraph:
             self.m_adjacency[v1][v2],self.m_adjacency[v2][v1]=0,0
 
 
-        
-"""
-m=SimpleGraph(8)
+"""        
+
+m=SimpleGraph(3)
 vertex_0=m.AddVertex("Элемент 0")
 vertex_1=m.AddVertex("Элемент 1")
 vertex_2=m.AddVertex("Элемент 2")
+
 vertex_3=m.AddVertex("Элемент 3")
 vertex_4=m.AddVertex("Элемент 4")
 vertex_5=m.AddVertex("Элемент 5")
 vertex_6=m.AddVertex("Элемент 6")
 vertex_7=m.AddVertex("Элемент 7")
+
 m.AddEdge(0,1)
+
 m.AddEdge(0,2)
 m.AddEdge(0,3)
 m.AddEdge(3,4)
-m.AddEdge(4,7)
+#m.AddEdge(4,7)
 m.AddEdge(4,5)
 #m.AddEdge(2,5)
 m.AddEdge(5,6)
+
 print(m.m_adjacency)
-K=m.DepthFirstSearch(6,8)
+K=m.DepthFirstSearch(0,2)
 print(K)
 for i in range(0,len(K)):
     print(K[i].Value)
