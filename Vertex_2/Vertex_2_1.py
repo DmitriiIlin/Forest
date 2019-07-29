@@ -28,6 +28,46 @@ class Stack:
 
     def size(self):
         return len(self.stack)
+
+class Node:
+
+    def __init__(self, v):
+        #Инициализация класса Node
+        self.value = v
+        self.next = None
+
+class Queue:
+
+    def __init__(self):
+        #Инициализация класса Queue
+        self.head = None
+        self.tail = None 
+
+    def enqueue(self, item):
+        # Добывление элемента в конец очереди 
+        if self.head is None:
+            self.head = item
+        else:
+            self.tail.next = item
+        self.tail = item
+
+    def dequeue(self):
+        # Выдача элемента из головы списка
+        if self.head==0:
+            return None
+        else: 
+            node=self.head
+            self.head=node.next
+            return node
+
+    def size(self):
+        # Метод определяет размер очереди
+        node=self.head
+        l=0
+        while node is not None:
+            l+=1
+            node=node.next
+        return l 
   
 class SimpleGraph:
 	
@@ -118,7 +158,89 @@ class SimpleGraph:
         else:
             return stack_for_path.stack
             
-                  
+    def FirstPath(self,VFrom,VTo):
+        #Метод формирует массив в котором содержуться VFrom и VTo, а так же вершины которые были посещены
+        self.Init_For_Hit() #Инициализация значений hit=False
+        res=self.Limit(VFrom,VTo)
+        if res==-1:
+            return []
+        if VFrom==VTo:
+            return []
+        current_Peek_Number=VFrom # Текущий номер вершины
+        current_Peek=self.vertex[VFrom]
+        queue=Queue()
+        Peek_Number=0
+        out=[]
+        self.vertex[current_Peek_Number].hit=True #Начинаем с начальной вершины
+        node=Node(self.vertex[current_Peek_Number]) #Создаем элемент node на базе self.vertex[current_Peek_Number]
+        queue.enqueue(node) #Проталкиваем начальную вершину в очередь
+        out.append(self.vertex[current_Peek_Number]) #Проталкиваем начальную вершину в выходной массив
+        while queue.size()!=0: #Рабочий цикл
+            if Peek_Number==None: # Если у вершины нет непосещенной связи то 
+                if queue.size()>0: # и если в очереди есть элемент 
+                    current_Peek=queue.dequeue().value # Удаляем первый элемент очереди и пресваиваем его переменной current_Peek
+                    #print(queue.size())
+                    current_Peek_Number=self.Vertex_Index(current_Peek) # Находим номер новой вершины
+                else:
+                    return [] # Очередь пуста , возвращаем пустой список
+            else:
+                pass 
+            Peek_Number=None #Флаг для искомой вершины , равен номеру найденой вершины, в противном случае None
+            for everylink in range(0,len(self.vertex)): #Смотрим каждую связь у вершины с номером current_Peek_Number
+                if self.m_adjacency[current_Peek_Number][everylink]==1: # Если связь есть
+                    if self.vertex[everylink].hit==False: #Если вершина не посещена
+                        self.vertex[everylink].hit=True # Посетили
+                        node=Node(self.vertex[everylink]) #Создали тип node 
+                        queue.enqueue(node) # Протолкнули в очередь
+                        out.append(self.vertex[everylink]) #Проталкиваем вершину в выходной список
+                        Peek_Number=everylink # Присвоили флагу номер вершины
+                        if everylink==VTo: # Если найденная вершина равна искомой 
+                            return out # то возвращаем очередь
+                        else:
+                            pass
+                    else:
+                        pass
+                else:
+                    pass
+            #print(queue.size(),"без удаления")
+            
+        else:
+            return []
+
+    def SecondPath(self,input,VFrom,VTo):
+        #Метод отфильтровывает путь от VFrom до VTo в массиве input
+        input_size=len(input) #Размер входного массива 
+        if input_size==0: #Если равен 0, то пути нет, возвращаем пустой список
+            return [] 
+        else:
+            pass
+        startvertex=VTo # Начинаем поиск от конечной вершины
+        finishvertex=VFrom # Вершина-цель, теперь это начальная вершина
+        out=[] # Выходной массив
+        out.append(self.vertex[VTo]) # Добавить стартовую вершину в массив
+        while input_size!=0: # Внешний цикл обхода
+            for everyvertex in range(0,len(self.vertex)): # Рабочий цикл
+                if self.m_adjacency[startvertex][everyvertex]==1: # Если есть связь между вершинами и :
+                    if self.vertex[everyvertex].hit==True and self.vertex[everyvertex] not in out: # Если мы посетили вершину и не занесли ее в выходной массив
+                        out.append(self.vertex[everyvertex]) # Добавить в выходной массив
+                        startvertex=everyvertex # Сделать стартовой вершиной новую
+                        break # Выйти из цикла
+                    else:
+                        pass
+                else:
+                    pass
+            if startvertex==finishvertex: # Если стартовая вершина равна финишной вершине, то заканчиваем работу
+                break # Заванчиваем работу
+            else:
+                pass
+        return self.Stack_Inverse(out) # Итоговый результат
+
+    def BreadthFirstSearch(self,VFrom, VTo):
+        #Метод поиска пути в ширину
+        first_res=self.FirstPath(VFrom,VTo)
+        second_res=self.SecondPath(first_res,VFrom,VTo)
+        return second_res
+        
     def AddVertex(self, v):
         # ваш код добавления новой вершины 
         # с значением value 
@@ -172,9 +294,9 @@ class SimpleGraph:
             self.m_adjacency[v1][v2],self.m_adjacency[v2][v1]=0,0
 
 
-"""        
-
-m=SimpleGraph(3)
+       
+"""
+m=SimpleGraph(8)
 vertex_0=m.AddVertex("Элемент 0")
 vertex_1=m.AddVertex("Элемент 1")
 vertex_2=m.AddVertex("Элемент 2")
@@ -192,13 +314,18 @@ m.AddEdge(0,3)
 m.AddEdge(3,4)
 #m.AddEdge(4,7)
 m.AddEdge(4,5)
-#m.AddEdge(2,5)
+m.AddEdge(2,5)
 m.AddEdge(5,6)
-
+#m.AddEdge(6,7)
 print(m.m_adjacency)
-K=m.DepthFirstSearch(0,2)
+
+K=m.DepthFirstSearch(0,7)
 print(K)
 for i in range(0,len(K)):
     print(K[i].Value)
-
+print("---------------")
+Z=m.BreadthFirstSearch(0,7)
+print(Z)
+for i in range(0,len(Z)):
+    print(Z[i].Value)
 """
