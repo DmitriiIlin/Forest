@@ -262,7 +262,7 @@ class SimpleGraph:
         res=[] 
         while loop==True:
             parent=input[vertex_number]
-            res.append(parent[0].Value)
+            res.append(parent[0])
             if self.vertex[VFrom]==parent[0]:
                 break
             else:
@@ -271,7 +271,7 @@ class SimpleGraph:
                         vertex_number=i
                         break
         res=self.Stack_Inverse(res)
-        res.append(self.vertex[VTo].Value)
+        res.append(self.vertex[VTo])
         return res
 
     def BreadthFirstSearch(self,VFrom, VTo):
@@ -334,8 +334,8 @@ class SimpleGraph:
             self.m_adjacency[v1][v2],self.m_adjacency[v2][v1]=0,0
 
 
-       
-"""
+"""       
+
 m=SimpleGraph(8)
 vertex_0=m.AddVertex("Элемент 0")
 vertex_1=m.AddVertex("Элемент 1")
@@ -365,6 +365,7 @@ K=m.DepthFirstSearch(0,7)
 print(K)
 for i in range(0,len(K)):
     print(K[i].Value)
+
 
 print("---------------")
 Z=m.BreadthFirstSearch(0,7)
