@@ -195,7 +195,7 @@ class SimpleGraph:
                         out.append(self.vertex[everylink]) #Проталкиваем вершину в выходной список
                         Peek_Number=everylink # Присвоили флагу номер вершины
                         if everylink==VTo: # Если найденная вершина равна искомой 
-                            return out # то возвращаем очередь
+                            return out # то возвращаем список 
                         else:
                             pass
                     else:
@@ -217,29 +217,69 @@ class SimpleGraph:
         startvertex=VTo # Начинаем поиск от конечной вершины
         finishvertex=VFrom # Вершина-цель, теперь это начальная вершина
         out=[] # Выходной массив
+        q_ty_of_steps=0
         out.append(self.vertex[VTo]) # Добавить стартовую вершину в массив
         while input_size!=0: # Внешний цикл обхода
-            for everyvertex in range(0,len(self.vertex)): # Рабочий цикл
-                if self.m_adjacency[startvertex][everyvertex]==1: # Если есть связь между вершинами и :
-                    if self.vertex[everyvertex].hit==True and self.vertex[everyvertex] not in out: # Если мы посетили вершину и не занесли ее в выходной массив
-                        out.append(self.vertex[everyvertex]) # Добавить в выходной массив
-                        startvertex=everyvertex # Сделать стартовой вершиной новую
-                        break # Выйти из цикла
+            for everyvertex in range(0,len(self.vertex)): # Внешний Рабочий цикл
+                for everylink in range(0,len(self.vertex)): #Внутренний рабочий цикл
+                    if self.m_adjacency[startvertex][everylink]==1: # Если есть связь между вершинами и :
+                        if self.vertex[everylink].hit==True and self.vertex[everylink] not in out: # Если мы посетили вершину и не занесли ее в выходной массив
+                            out.append(self.vertex[everylink]) # Добавить в выходной массив
+                            q_ty_of_steps+=1
+                            startvertex=everylink # Сделать стартовой вершиной новую
+                            break # Выйти из цикла
+                        else:
+                            pass
                     else:
                         pass
+                if startvertex==finishvertex: # Если стартовая вершина равна финишной вершине то смотрим кол-во шагов за которое дошли
+                    
+                    break # Заванчиваем работу
                 else:
                     pass
-            if startvertex==finishvertex: # Если стартовая вершина равна финишной вершине, то заканчиваем работу
-                break # Заванчиваем работу
-            else:
-                pass
         return self.Stack_Inverse(out) # Итоговый результат
+    
+    def Parentpath(self,input,VFrom,VTo):
+        #Метод ищет оптимальный путь основываясь на результате поисква в ширину
+        visited_vertex=[]
+        path_massive=[[] for _ in range(0,len(self.vertex))]
+        visited_vertex.append(self.vertex[VFrom])
+        #every_visited_vertex=0
+        for every_visited_vertex in range(0,len(input)):
+            #print(visited_vertex[every_visited_vertex].Value)
+            for vertexnumber in range(0,len(self.vertex)):
+                if self.vertex[vertexnumber] in input and self.vertex[vertexnumber] not in visited_vertex and self.m_adjacency[self.Vertex_Index(visited_vertex[every_visited_vertex])][vertexnumber]:
+                    path_massive[vertexnumber].append(visited_vertex[every_visited_vertex])
+                    visited_vertex.append(self.vertex[vertexnumber])
+            if every_visited_vertex==VTo:
+                break
+        return path_massive
+
+    def ClosestPath(self,input,VFrom,VTo):
+        #Формирование самого короткого пути на основе результата Parent path
+        loop=True
+        vertex_number=VTo
+        res=[] 
+        while loop==True:
+            parent=input[vertex_number]
+            res.append(parent[0].Value)
+            if self.vertex[VFrom]==parent[0]:
+                break
+            else:
+                for i in range(0,len(self.vertex)):
+                    if self.vertex[i]==parent[0]:
+                        vertex_number=i
+                        break
+        res=self.Stack_Inverse(res)
+        res.append(self.vertex[VTo].Value)
+        return res
 
     def BreadthFirstSearch(self,VFrom, VTo):
         #Метод поиска пути в ширину
         first_res=self.FirstPath(VFrom,VTo)
-        second_res=self.SecondPath(first_res,VFrom,VTo)
-        return second_res
+        second_res=self.Parentpath(first_res,VFrom,VTo)
+        third_res=self.ClosestPath(second_res,VFrom,VTo)
+        return third_res
         
     def AddVertex(self, v):
         # ваш код добавления новой вершины 
@@ -300,7 +340,6 @@ m=SimpleGraph(8)
 vertex_0=m.AddVertex("Элемент 0")
 vertex_1=m.AddVertex("Элемент 1")
 vertex_2=m.AddVertex("Элемент 2")
-
 vertex_3=m.AddVertex("Элемент 3")
 vertex_4=m.AddVertex("Элемент 4")
 vertex_5=m.AddVertex("Элемент 5")
@@ -308,24 +347,26 @@ vertex_6=m.AddVertex("Элемент 6")
 vertex_7=m.AddVertex("Элемент 7")
 
 m.AddEdge(0,1)
-
 m.AddEdge(0,2)
 m.AddEdge(0,3)
+m.AddEdge(1,2)
+m.AddEdge(2,3)
+m.AddEdge(2,4)
 m.AddEdge(3,4)
-#m.AddEdge(4,7)
 m.AddEdge(4,5)
-m.AddEdge(2,5)
+m.AddEdge(4,6)
 m.AddEdge(5,6)
-#m.AddEdge(6,7)
-print(m.m_adjacency)
+m.AddEdge(6,7)
+m.AddEdge(3,6)
+m.AddEdge(0,7)
+#print(m.m_adjacency)
 
 K=m.DepthFirstSearch(0,7)
 print(K)
 for i in range(0,len(K)):
     print(K[i].Value)
+
 print("---------------")
 Z=m.BreadthFirstSearch(0,7)
 print(Z)
-for i in range(0,len(Z)):
-    print(Z[i].Value)
 """
