@@ -274,12 +274,66 @@ class SimpleGraph:
         res.append(self.vertex[VTo])
         return res
 
+    def OnlyOneLink(self):
+        #Возвращает вершины с одной связью
+        self.Init_For_Hit() #Инициализация значений hit=False
+        res=[]
+        q_ty_of_links=0
+        for everyvertex in range(0,len(self.vertex)):
+            for everylink in range(0,len(self.vertex)):
+                if self.m_adjacency[everyvertex][everylink]==1:
+                    q_ty_of_links+=1
+            if q_ty_of_links<2 and self.vertex[everyvertex] not in res:
+                res.append(self.vertex[everyvertex])
+            print(q_ty_of_links)
+            q_ty_of_links=0 
+        return res
+
+    def WeakVertices(self):
+        #Поиск возвращанет список узлов не входящих не в один треугольник
+        self.Init_For_Hit() #Инициализация значений hit=False
+        res=self.OnlyOneLink()
+        anti_res=[]
+        first_vertex_links=[]
+        second_vertex_links=[]
+        for first_link in range(0,len(self.vertex)):
+            for second_link in range(0,len(self.vertex)):
+                if self.m_adjacency[first_link][second_link]==1:
+                    first_vertex_links.append(self.vertex[second_link])
+                else:
+                    pass
+            for v in range(0,len(first_vertex_links)):
+                vertex_number=self.Vertex_Index(first_vertex_links[v])
+                for i in range(0,len(self.vertex)):
+                    if self.m_adjacency[vertex_number][i]==1:
+                        second_vertex_links.append(self.vertex[i])
+                    else:
+                        pass
+                for j in range(0,len(first_vertex_links)):
+                    if first_vertex_links[j] in second_vertex_links:
+                        if first_vertex_links[j] not in res:
+                            anti_res.append(self.vertex[first_link])
+                            anti_res.append(self.vertex[vertex_number])
+                            anti_res.append(first_vertex_links[j])
+                        else:
+                            pass
+                    else:
+                        pass  
+                second_vertex_links=[]        
+            first_vertex_links=[]
+        for ver in range(0,len(self.vertex)):
+            if self.vertex[ver] not in anti_res and self.vertex[ver] not in res:
+                res.append(self.vertex[ver])
+        return res  
+
     def BreadthFirstSearch(self,VFrom, VTo):
         #Метод поиска пути в ширину
         first_res=self.FirstPath(VFrom,VTo)
         second_res=self.Parentpath(first_res,VFrom,VTo)
         third_res=self.ClosestPath(second_res,VFrom,VTo)
         return third_res
+
+    
         
     def AddVertex(self, v):
         # ваш код добавления новой вершины 
@@ -334,8 +388,8 @@ class SimpleGraph:
             self.m_adjacency[v1][v2],self.m_adjacency[v2][v1]=0,0
 
 
-"""       
-
+     
+"""
 m=SimpleGraph(8)
 vertex_0=m.AddVertex("Элемент 0")
 vertex_1=m.AddVertex("Элемент 1")
@@ -343,15 +397,25 @@ vertex_2=m.AddVertex("Элемент 2")
 vertex_3=m.AddVertex("Элемент 3")
 vertex_4=m.AddVertex("Элемент 4")
 vertex_5=m.AddVertex("Элемент 5")
+
 vertex_6=m.AddVertex("Элемент 6")
 vertex_7=m.AddVertex("Элемент 7")
 
 m.AddEdge(0,1)
 m.AddEdge(0,2)
-m.AddEdge(0,3)
 m.AddEdge(1,2)
-m.AddEdge(2,3)
+m.AddEdge(1,3)
 m.AddEdge(2,4)
+m.AddEdge(2,3)
+m.AddEdge(4,5)
+m.AddEdge(3,4)
+m.AddEdge(1,6)
+m.AddEdge(3,6)
+m.AddEdge(5,6)
+m.AddEdge(6,7)
+
+m.AddEdge(5,7)
+
 m.AddEdge(3,4)
 m.AddEdge(4,5)
 m.AddEdge(4,6)
@@ -368,6 +432,8 @@ for i in range(0,len(K)):
 
 
 print("---------------")
-Z=m.BreadthFirstSearch(0,7)
-print(Z)
+Z=m.WeakVertices()
+for i in range(0,len(Z)):
+    print(Z[i].Value)
+
 """
